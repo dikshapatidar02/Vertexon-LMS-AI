@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: Vertexon LMS-AI API
+  version: 1.0.0
+  description: OpenAPI 3.0 specification for Vertexon Learning Management System with AI Tutor.
+paths:
+  /auth/login:
+    post:
+      summary: User authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Access and refresh tokens
+  /courses:
+    get:
+      summary: List course catalog
+      responses:
+        '200':
+          description: List of approved courses
+  /ai/chat/sessions/{id}/messages:
+    post:
+      summary: Send RAG query to AI Tutor
+      responses:
+        '200':
+          description: Grounded AI reply with lecture citations
