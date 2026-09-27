@@ -20,18 +20,20 @@ import {
   Bell,
   Settings,
   Trophy,
+  X,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useCourseStore } from '../../store/courseStore';
 
 export const Sidebar: React.FC = () => {
   const { user, logout } = useAuthStore();
-  const { toggleAiDrawer } = useCourseStore();
+  const { toggleAiDrawer, isMobileMenuOpen, toggleMobileMenu } = useCourseStore();
   const navigate = useNavigate();
   const role = user?.role || 'student';
 
   const handleLogout = () => {
     logout();
+    toggleMobileMenu(false);
     navigate('/login', { replace: true });
   };
 
@@ -42,9 +44,23 @@ export const Sidebar: React.FC = () => {
         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-800 hover:text-slate-900 dark:hover:text-slate-200'
     }`;
 
-  return (
-    <aside className="w-60 bg-white dark:bg-dark-900 border-r border-slate-200 dark:border-dark-800 flex flex-col justify-between shrink-0 min-h-[calc(100vh-57px)] p-3">
+  const handleNavClick = () => {
+    toggleMobileMenu(false);
+  };
+
+  const sidebarContent = (
+    <div className="flex flex-col justify-between h-full p-3 overflow-y-auto">
       <div className="space-y-4">
+        {/* Mobile Sidebar Close Button */}
+        <div className="flex md:hidden items-center justify-between pb-2 border-b border-slate-200 dark:border-dark-800">
+          <span className="font-bold text-xs text-slate-500 uppercase tracking-wider">Navigation Menu</span>
+          <button
+            onClick={() => toggleMobileMenu(false)}
+            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         {/* STUDENT WORKSPACE NAV */}
         {role === 'student' && (
@@ -53,23 +69,23 @@ export const Sidebar: React.FC = () => {
               <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
                 Learning
               </div>
-              <NavLink to="/dashboard" className={navClass}>
+              <NavLink to="/dashboard" className={navClass} onClick={handleNavClick}>
                 <LayoutDashboard className="w-4 h-4 shrink-0" />
                 <span>Dashboard</span>
               </NavLink>
-              <NavLink to="/catalog" className={navClass}>
+              <NavLink to="/catalog" className={navClass} onClick={handleNavClick}>
                 <BookOpen className="w-4 h-4 shrink-0" />
                 <span>My Courses & Catalog</span>
               </NavLink>
-              <NavLink to="/course-player" className={navClass}>
+              <NavLink to="/course-player" className={navClass} onClick={handleNavClick}>
                 <PlaySquare className="w-4 h-4 shrink-0" />
                 <span>Lecture Player</span>
               </NavLink>
-              <NavLink to="/assignments" className={navClass}>
+              <NavLink to="/assignments" className={navClass} onClick={handleNavClick}>
                 <FileCheck2 className="w-4 h-4 shrink-0" />
                 <span>Assignments</span>
               </NavLink>
-              <NavLink to="/quizzes" className={navClass}>
+              <NavLink to="/quizzes" className={navClass} onClick={handleNavClick}>
                 <HelpCircle className="w-4 h-4 shrink-0" />
                 <span>Quizzes</span>
               </NavLink>
@@ -79,17 +95,20 @@ export const Sidebar: React.FC = () => {
               <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
                 Achievements & Tools
               </div>
-              <NavLink to="/certificates" className={navClass}>
+              <NavLink to="/certificates" className={navClass} onClick={handleNavClick}>
                 <Award className="w-4 h-4 shrink-0" />
                 <span>Certificates</span>
               </NavLink>
-              <NavLink to="/achievements" className={navClass}>
+              <NavLink to="/achievements" className={navClass} onClick={handleNavClick}>
                 <Trophy className="w-4 h-4 shrink-0" />
                 <span>Achievements</span>
               </NavLink>
               <button
                 type="button"
-                onClick={() => toggleAiDrawer(true)}
+                onClick={() => {
+                  toggleMobileMenu(false);
+                  toggleAiDrawer(true);
+                }}
                 className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-800 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
               >
                 <div className="flex items-center gap-2.5">
@@ -100,19 +119,9 @@ export const Sidebar: React.FC = () => {
                   Demo
                 </span>
               </button>
-            </div>
-
-            <div className="space-y-1">
-              <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
-                Community & Inbox
-              </div>
-              <NavLink to="/discussions" className={navClass}>
+              <NavLink to="/discussions" className={navClass} onClick={handleNavClick}>
                 <MessageSquare className="w-4 h-4 shrink-0" />
                 <span>Discussions</span>
-              </NavLink>
-              <NavLink to="/notifications" className={navClass}>
-                <Bell className="w-4 h-4 shrink-0" />
-                <span>Notifications</span>
               </NavLink>
             </div>
           </>
@@ -121,40 +130,24 @@ export const Sidebar: React.FC = () => {
         {/* INSTRUCTOR WORKSPACE NAV */}
         {role === 'instructor' && (
           <div className="space-y-1">
-            <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-purple-600 dark:text-purple-400 uppercase">
+            <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
               Instructor Portal
             </div>
-            <NavLink to="/instructor-dashboard" className={navClass}>
+            <NavLink to="/instructor-dashboard" className={navClass} onClick={handleNavClick}>
               <BarChart3 className="w-4 h-4 shrink-0" />
-              <span>Instructor Dashboard</span>
+              <span>Instructor Analytics</span>
             </NavLink>
-            <NavLink to="/catalog" className={navClass}>
-              <BookOpen className="w-4 h-4 shrink-0" />
-              <span>Course Catalog & Content</span>
-            </NavLink>
-            <NavLink to="/create-course" className={navClass}>
+            <NavLink to="/create-course" className={navClass} onClick={handleNavClick}>
               <PlusCircle className="w-4 h-4 shrink-0" />
-              <span>Create Course</span>
+              <span>Course Authoring</span>
             </NavLink>
-            <NavLink to="/assignments" className={navClass}>
+            <NavLink to="/catalog" className={navClass} onClick={handleNavClick}>
+              <BookOpen className="w-4 h-4 shrink-0" />
+              <span>Course Catalog</span>
+            </NavLink>
+            <NavLink to="/assignments" className={navClass} onClick={handleNavClick}>
               <FileCheck2 className="w-4 h-4 shrink-0" />
-              <span>Assignments</span>
-            </NavLink>
-            <NavLink to="/quizzes" className={navClass}>
-              <HelpCircle className="w-4 h-4 shrink-0" />
-              <span>Quizzes</span>
-            </NavLink>
-            <NavLink to="/admin-users" className={navClass}>
-              <Users className="w-4 h-4 shrink-0" />
-              <span>Students</span>
-            </NavLink>
-            <NavLink to="/discussions" className={navClass}>
-              <MessageSquare className="w-4 h-4 shrink-0" />
-              <span>Discussions</span>
-            </NavLink>
-            <NavLink to="/notifications" className={navClass}>
-              <Bell className="w-4 h-4 shrink-0" />
-              <span>Announcements</span>
+              <span>Assignment Grading</span>
             </NavLink>
           </div>
         )}
@@ -162,50 +155,38 @@ export const Sidebar: React.FC = () => {
         {/* ADMIN WORKSPACE NAV */}
         {role === 'admin' && (
           <div className="space-y-1">
-            <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-red-600 dark:text-red-400 uppercase">
-              Admin Governance
+            <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
+              Platform Governance
             </div>
-            <NavLink to="/admin-panel" className={navClass}>
+            <NavLink to="/admin-panel" className={navClass} onClick={handleNavClick}>
               <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Admin Dashboard</span>
+              <span>Governance Overview</span>
             </NavLink>
-            <NavLink to="/admin-users" className={navClass}>
+            <NavLink to="/admin-users" className={navClass} onClick={handleNavClick}>
               <Users className="w-4 h-4 shrink-0" />
               <span>User Management</span>
             </NavLink>
-            <NavLink to="/catalog" className={navClass}>
-              <BookOpen className="w-4 h-4 shrink-0" />
-              <span>Courses</span>
-            </NavLink>
-            <NavLink to="/admin-approvals" className={navClass}>
-              <Award className="w-4 h-4 shrink-0" />
+            <NavLink to="/admin-approvals" className={navClass} onClick={handleNavClick}>
+              <PlusCircle className="w-4 h-4 shrink-0" />
               <span>Course Approvals</span>
             </NavLink>
-            <NavLink to="/admin-moderation" className={navClass}>
+            <NavLink to="/admin-moderation" className={navClass} onClick={handleNavClick}>
               <Flag className="w-4 h-4 shrink-0" />
-              <span>Content & Moderation</span>
-            </NavLink>
-            <NavLink to="/discussions" className={navClass}>
-              <MessageSquare className="w-4 h-4 shrink-0" />
-              <span>Discussions</span>
-            </NavLink>
-            <NavLink to="/notifications" className={navClass}>
-              <Bell className="w-4 h-4 shrink-0" />
-              <span>Notifications</span>
+              <span>Content Moderation</span>
             </NavLink>
           </div>
         )}
 
-        {/* ACCOUNT / FOOTER NAV */}
+        {/* ACCOUNT SECTION */}
         <div className="space-y-1 pt-2 border-t border-slate-200/80 dark:border-dark-800">
           <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
             Account
           </div>
-          <NavLink to="/profile" className={navClass}>
+          <NavLink to="/profile" className={navClass} onClick={handleNavClick}>
             <User className="w-4 h-4 shrink-0" />
             <span>Profile</span>
           </NavLink>
-          <NavLink to="/settings" className={navClass}>
+          <NavLink to="/settings" className={navClass} onClick={handleNavClick}>
             <Settings className="w-4 h-4 shrink-0" />
             <span>Settings</span>
           </NavLink>
@@ -235,6 +216,28 @@ export const Sidebar: React.FC = () => {
           </span>
         </div>
       )}
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-60 bg-white dark:bg-dark-900 border-r border-slate-200 dark:border-dark-800 flex-col justify-between shrink-0 min-h-[calc(100vh-57px)]">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Drawer Slide-Over */}
+      {isMobileMenuOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => toggleMobileMenu(false)}
+          />
+          <aside className="fixed inset-y-0 left-0 w-64 max-w-[85vw] bg-white dark:bg-dark-900 z-50 md:hidden shadow-2xl flex flex-col justify-between border-r border-slate-200 dark:border-dark-800">
+            {sidebarContent}
+          </aside>
+        </>
+      )}
+    </>
   );
 };

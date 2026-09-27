@@ -71,7 +71,7 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-dark-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-dark-950 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-2">
         <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-brand-600 text-white shadow-sm">
           <Sparkles className="w-5 h-5" />

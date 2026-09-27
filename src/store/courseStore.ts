@@ -35,10 +35,12 @@ interface CourseState {
   activeCourse: CourseDetail | null;
   activeLecture: Lecture | null;
   isAiDrawerOpen: boolean;
+  isMobileMenuOpen: boolean;
   aiMode: 'beginner' | 'intermediate' | 'advanced';
   setActiveCourse: (course: CourseDetail) => void;
   setActiveLecture: (lecture: Lecture) => void;
   toggleAiDrawer: (open?: boolean) => void;
+  toggleMobileMenu: (open?: boolean) => void;
   setAiMode: (mode: 'beginner' | 'intermediate' | 'advanced') => void;
 }
 
@@ -46,6 +48,7 @@ export const useCourseStore = create<CourseState>((set) => ({
   activeCourse: null,
   activeLecture: null,
   isAiDrawerOpen: false,
+  isMobileMenuOpen: false,
   aiMode: 'intermediate',
 
   setActiveCourse: (course) => {
@@ -58,5 +61,6 @@ export const useCourseStore = create<CourseState>((set) => ({
 
   setActiveLecture: (lecture) => set({ activeLecture: lecture }),
   toggleAiDrawer: (open) => set((state) => ({ isAiDrawerOpen: open !== undefined ? open : !state.isAiDrawerOpen })),
+  toggleMobileMenu: (open) => set((state) => ({ isMobileMenuOpen: open !== undefined ? open : !state.isMobileMenuOpen })),
   setAiMode: (aiMode) => set({ aiMode }),
 }));

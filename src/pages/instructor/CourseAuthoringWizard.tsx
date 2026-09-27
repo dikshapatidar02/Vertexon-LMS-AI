@@ -130,18 +130,18 @@ export const CourseAuthoringWizard: React.FC = () => {
       </div>
 
       {/* Step Indicator */}
-      <div className="flex items-center gap-4 bg-white dark:bg-dark-900 p-4 rounded-xl border border-slate-200 dark:border-dark-800 text-xs font-semibold shadow-sm">
-        <div className={`flex items-center gap-2 ${step >= 1 ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400'}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 bg-white dark:bg-dark-900 p-3.5 sm:p-4 rounded-xl border border-slate-200 dark:border-dark-800 text-xs font-semibold shadow-sm">
+        <div className={`flex items-center gap-2 ${step >= 1 ? 'text-brand-600 dark:text-brand-400 font-bold' : 'text-slate-400'}`}>
           <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${step >= 1 ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-600' : 'bg-slate-100 dark:bg-dark-800 text-slate-400'}`}>1</span>
           <span>Course Metadata</span>
         </div>
-        <ChevronRight className="w-4 h-4 text-slate-300 dark:text-dark-700" />
-        <div className={`flex items-center gap-2 ${step >= 2 ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400'}`}>
+        <ChevronRight className="hidden sm:block w-4 h-4 text-slate-300 dark:text-dark-700" />
+        <div className={`flex items-center gap-2 ${step >= 2 ? 'text-brand-600 dark:text-brand-400 font-bold' : 'text-slate-400'}`}>
           <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${step >= 2 ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-600' : 'bg-slate-100 dark:bg-dark-800 text-slate-400'}`}>2</span>
           <span>Curriculum Modules</span>
         </div>
-        <ChevronRight className="w-4 h-4 text-slate-300 dark:text-dark-700" />
-        <div className={`flex items-center gap-2 ${step >= 3 ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400'}`}>
+        <ChevronRight className="hidden sm:block w-4 h-4 text-slate-300 dark:text-dark-700" />
+        <div className={`flex items-center gap-2 ${step >= 3 ? 'text-brand-600 dark:text-brand-400 font-bold' : 'text-slate-400'}`}>
           <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${step >= 3 ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-600' : 'bg-slate-100 dark:bg-dark-800 text-slate-400'}`}>3</span>
           <span>Lectures & AI Quiz</span>
         </div>

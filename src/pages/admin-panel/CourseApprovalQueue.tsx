@@ -103,16 +103,16 @@ export const CourseApprovalQueue: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="pt-1 flex justify-end gap-2.5">
+                <div className="pt-1 flex flex-col xs:flex-row justify-end gap-2.5">
                   <button
                     onClick={() => setSelectedCourseId(c.id)}
-                    className="btn-secondary h-9 px-4 text-xs font-semibold"
+                    className="btn-secondary h-9 px-4 text-xs font-semibold w-full xs:w-auto"
                   >
                     Reject Course
                   </button>
                   <button
                     onClick={() => handleDecision(c.id, 'approved')}
-                    className="btn-primary h-9 px-4 text-xs font-semibold"
+                    className="btn-primary h-9 px-4 text-xs font-semibold w-full xs:w-auto"
                   >
                     <CheckCircle2 className="w-4 h-4" /> Approve & Publish
                   </button>

@@ -114,7 +114,7 @@ export const QuizzesPage: React.FC = () => {
             <p className="text-xs text-slate-500">Your score has been evaluated and recorded locally.</p>
           </div>
 
-          <div className="inline-block p-6 bg-slate-50 dark:bg-dark-800/80 rounded-2xl border border-slate-200 dark:border-dark-700 min-w-[240px]">
+          <div className="inline-block p-5 sm:p-6 bg-slate-50 dark:bg-dark-800/80 rounded-2xl border border-slate-200 dark:border-dark-700 w-full max-w-xs">
             <span className="text-4xl font-extrabold text-brand-600 dark:text-brand-400">
               {result.percentage}%
             </span>
@@ -135,27 +135,27 @@ export const QuizzesPage: React.FC = () => {
       ) : (
         /* Quiz Questions List */
         <div className="space-y-6">
-          <div className="bg-slate-50 dark:bg-dark-950/60 p-4 rounded-xl border border-slate-200 dark:border-dark-800 flex items-center justify-between text-xs">
+          <div className="bg-slate-50 dark:bg-dark-950/60 p-4 rounded-xl border border-slate-200 dark:border-dark-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
             <div>
               <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">{activeQuiz.title}</h2>
               <p className="text-slate-500">{activeQuiz.courseTitle} &nbsp;•&nbsp; {activeQuiz.questions.length} Questions</p>
             </div>
-            <span className="px-3 py-1 bg-white dark:bg-dark-900 font-bold border border-slate-200 dark:border-dark-700 rounded-lg text-slate-700 dark:text-slate-300">
+            <span className="px-3 py-1 bg-white dark:bg-dark-900 font-bold border border-slate-200 dark:border-dark-700 rounded-lg text-slate-700 dark:text-slate-300 self-start sm:self-center">
               Time Limit: {activeQuiz.timeLimitMinutes} Mins
             </span>
           </div>
 
           <div className="space-y-5">
             {activeQuiz.questions.map((q, idx) => (
-              <div key={q.id} className="bg-white dark:bg-dark-900 p-6 rounded-xl border border-slate-200 dark:border-dark-800 space-y-4 shadow-sm">
+              <div key={q.id} className="bg-white dark:bg-dark-900 p-4 sm:p-6 rounded-xl border border-slate-200 dark:border-dark-800 space-y-4 shadow-sm">
                 <div className="flex items-start gap-3">
                   <span className="w-6 h-6 rounded-md bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 font-extrabold text-xs flex items-center justify-center shrink-0 mt-0.5">
                     {idx + 1}
                   </span>
-                  <div className="space-y-1 flex-1">
-                    <div className="flex items-center justify-between gap-2">
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
                       <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">{q.prompt}</h3>
-                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-slate-100 dark:bg-dark-800 text-slate-500 rounded border border-slate-200 dark:border-dark-700 shrink-0">
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-slate-100 dark:bg-dark-800 text-slate-500 rounded border border-slate-200 dark:border-dark-700 self-start sm:self-center shrink-0">
                         {q.type.replace('_', ' ')}
                       </span>
                     </div>
@@ -164,21 +164,21 @@ export const QuizzesPage: React.FC = () => {
 
                 {/* Multiple Choice Options */}
                 {q.type === 'mcq' && (
-                  <div className="space-y-2 pl-9">
+                  <div className="space-y-2 pl-0 sm:pl-9">
                     {q.options?.map((opt, optIdx) => {
                       const isSelected = userAnswers[q.id] === optIdx;
                       return (
                         <div
                           key={optIdx}
                           onClick={() => handleSelectMCQ(q.id, optIdx)}
-                          className={`p-3.5 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between ${
+                          className={`p-3.5 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between gap-2 ${
                             isSelected
                               ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 text-brand-900 dark:text-brand-200 font-semibold shadow-sm'
                               : 'bg-white dark:bg-dark-900 border-slate-200 dark:border-dark-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-800'
                           }`}
                         >
-                          <span>{opt}</span>
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-brand-600 bg-brand-600' : 'border-slate-300 dark:border-dark-600'}`}>
+                          <span className="break-words min-w-0">{opt}</span>
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? 'border-brand-600 bg-brand-600' : 'border-slate-300 dark:border-dark-600'}`}>
                             {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                           </div>
                         </div>
@@ -189,7 +189,7 @@ export const QuizzesPage: React.FC = () => {
 
                 {/* Multiple Select Options */}
                 {q.type === 'multi_select' && (
-                  <div className="space-y-2 pl-9">
+                  <div className="space-y-2 pl-0 sm:pl-9">
                     {q.options?.map((opt, optIdx) => {
                       const currentArr = (userAnswers[q.id] as number[]) || [];
                       const isSelected = currentArr.includes(optIdx);
@@ -197,14 +197,14 @@ export const QuizzesPage: React.FC = () => {
                         <div
                           key={optIdx}
                           onClick={() => handleToggleMultiSelect(q.id, optIdx)}
-                          className={`p-3.5 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between ${
+                          className={`p-3.5 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between gap-2 ${
                             isSelected
                               ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 text-brand-900 dark:text-brand-200 font-semibold shadow-sm'
                               : 'bg-white dark:bg-dark-900 border-slate-200 dark:border-dark-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-800'
                           }`}
                         >
-                          <span>{opt}</span>
-                          <div className={`w-4 h-4 rounded border flex items-center justify-center ${isSelected ? 'border-brand-600 bg-brand-600' : 'border-slate-300 dark:border-dark-600'}`}>
+                          <span className="break-words min-w-0">{opt}</span>
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${isSelected ? 'border-brand-600 bg-brand-600' : 'border-slate-300 dark:border-dark-600'}`}>
                             {isSelected && <CheckCircle2 className="w-3 h-3 text-white" />}
                           </div>
                         </div>
@@ -215,7 +215,7 @@ export const QuizzesPage: React.FC = () => {
 
                 {/* Short Answer Input */}
                 {q.type === 'short_answer' && (
-                  <div className="pl-9">
+                  <div className="pl-0 sm:pl-9">
                     <input
                       type="text"
                       placeholder="Type your answer explanation..."

@@ -90,21 +90,21 @@ export const UserManagement: React.FC = () => {
           <p className="text-xs text-slate-500">Manage learner roles, grant instructor access, and audit active user status.</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+          <div className="relative flex-1 sm:flex-none">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 pointer-events-none" />
             <input
               type="text"
               placeholder="Search user or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="form-input pl-8 text-xs py-1.5 min-w-[200px]"
+              className="form-input pl-8 text-xs py-1.5 w-full sm:w-auto sm:min-w-[200px]"
             />
           </div>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="form-input text-xs py-1.5 w-auto font-medium"
+            className="form-input text-xs py-1.5 w-full sm:w-auto font-medium"
           >
             <option value="All">All Roles</option>
             <option value="student">Students</option>
@@ -114,15 +114,15 @@ export const UserManagement: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-dark-900 rounded-xl border border-slate-200 dark:border-dark-800 overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-dark-900 rounded-xl border border-slate-200 dark:border-dark-800 overflow-x-auto shadow-sm">
         <table className="w-full text-xs text-left text-slate-600 dark:text-slate-300">
           <thead className="bg-slate-50 dark:bg-dark-800 text-slate-700 dark:text-slate-200 uppercase text-[10px] font-bold">
             <tr>
-              <th className="p-3.5">User Name</th>
-              <th className="p-3.5">Email Address</th>
-              <th className="p-3.5">Role</th>
-              <th className="p-3.5">Status</th>
-              <th className="p-3.5 text-right">Actions</th>
+              <th className="p-3.5 whitespace-nowrap">User Name</th>
+              <th className="p-3.5 whitespace-nowrap">Email Address</th>
+              <th className="p-3.5 whitespace-nowrap">Role</th>
+              <th className="p-3.5 whitespace-nowrap">Status</th>
+              <th className="p-3.5 text-right whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-dark-800">

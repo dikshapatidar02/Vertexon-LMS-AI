@@ -63,20 +63,20 @@ export const ContentModeration: React.FC = () => {
                 Reason: {p.reason}
               </div>
 
-              <div className="p-3 bg-red-50/60 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900/40 text-xs text-red-900 dark:text-red-200 font-mono">
+              <div className="p-3 bg-red-50/60 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900/40 text-xs text-red-900 dark:text-red-200 font-mono break-all">
                 {p.content}
               </div>
 
-              <div className="flex justify-end gap-2 pt-1">
+              <div className="flex flex-col sm:flex-row justify-end gap-2 pt-1">
                 <button
                   onClick={() => handleModerate(p.id, 'dismiss')}
-                  className="btn-secondary h-8 px-3 text-xs"
+                  className="btn-secondary h-8 px-3 text-xs w-full sm:w-auto"
                 >
                   Dismiss Flag
                 </button>
                 <button
                   onClick={() => handleModerate(p.id, 'delete')}
-                  className="btn-danger h-8 px-3 text-xs"
+                  className="btn-danger h-8 px-3 text-xs w-full sm:w-auto"
                 >
                   <Trash2 className="w-3.5 h-3.5" /> Delete Post
                 </button>

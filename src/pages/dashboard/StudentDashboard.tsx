@@ -70,7 +70,7 @@ export const StudentDashboard: React.FC = () => {
       </div>
 
       {/* Metric Blocks Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-white dark:bg-dark-900 p-4 rounded-xl border border-slate-200 dark:border-dark-800 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Enrolled Courses</span>
@@ -135,12 +135,12 @@ export const StudentDashboard: React.FC = () => {
             const pct = Math.round((doneLectures / totalLectures) * 100) || 45;
 
             return (
-              <div key={course.id} className="bg-white dark:bg-dark-900 p-5 rounded-xl border border-slate-200 dark:border-dark-800 space-y-4 shadow-sm">
-                <div className="flex gap-4">
+              <div key={course.id} className="bg-white dark:bg-dark-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-dark-800 space-y-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <img
                     src={course.thumbnail}
                     alt={course.title}
-                    className="w-24 h-24 rounded-lg object-cover border border-slate-200 dark:border-dark-800 shrink-0"
+                    className="w-full sm:w-24 h-32 sm:h-24 rounded-lg object-cover border border-slate-200 dark:border-dark-800 shrink-0"
                   />
                   <div className="space-y-1 min-w-0 flex-1">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
@@ -152,7 +152,7 @@ export const StudentDashboard: React.FC = () => {
                     <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                       Instructor: {course.instructor}
                     </p>
-                    <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
                       Current Lesson: {course.modules[0]?.lectures[0]?.title || 'Module 1'}
                     </p>
                   </div>
@@ -169,13 +169,13 @@ export const StudentDashboard: React.FC = () => {
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <div className="flex justify-between items-center pt-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
                     <span className="text-xs text-slate-500">
                       {doneLectures} of {totalLectures} lectures completed
                     </span>
                     <button
                       onClick={() => handleContinueCourse(course.id)}
-                      className="btn-primary h-8 px-3 text-xs"
+                      className="btn-primary h-8 px-3 text-xs w-full sm:w-auto"
                     >
                       Resume Lesson <ArrowRight className="w-3.5 h-3.5" />
                     </button>
@@ -202,34 +202,34 @@ export const StudentDashboard: React.FC = () => {
 
           <div className="bg-white dark:bg-dark-900 rounded-xl border border-slate-200 dark:border-dark-800 divide-y divide-slate-100 dark:divide-dark-800 shadow-sm overflow-hidden">
             {INITIAL_ASSIGNMENTS.map((asg) => (
-              <div key={asg.id} className="p-4 flex items-center justify-between gap-4 text-xs">
+              <div key={asg.id} className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 text-xs">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center shrink-0">
                     <FileCheck2 className="w-4 h-4" />
                   </div>
-                  <div className="truncate">
-                    <div className="font-bold text-slate-900 dark:text-slate-100">{asg.title}</div>
-                    <div className="text-slate-500 text-[11px]">{asg.courseTitle} • Due: {asg.dueDate}</div>
+                  <div className="truncate min-w-0">
+                    <div className="font-bold text-slate-900 dark:text-slate-100 truncate">{asg.title}</div>
+                    <div className="text-slate-500 text-[11px] truncate">{asg.courseTitle} • Due: {asg.dueDate}</div>
                   </div>
                 </div>
-                <Link to="/assignments" className="btn-secondary h-8 px-3 text-xs shrink-0 font-semibold">
+                <Link to="/assignments" className="btn-secondary h-8 px-3 text-xs shrink-0 font-semibold text-center">
                   View Instructions
                 </Link>
               </div>
             ))}
 
             {INITIAL_QUIZZES.map((qz) => (
-              <div key={qz.id} className="p-4 flex items-center justify-between gap-4 text-xs">
+              <div key={qz.id} className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 text-xs">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-lg bg-brand-50 dark:bg-brand-950/60 text-brand-600 flex items-center justify-center shrink-0">
                     <HelpCircle className="w-4 h-4" />
                   </div>
-                  <div className="truncate">
-                    <div className="font-bold text-slate-900 dark:text-slate-100">{qz.title}</div>
-                    <div className="text-slate-500 text-[11px]">{qz.questions.length} questions • {qz.timeLimitMinutes} min limit</div>
+                  <div className="truncate min-w-0">
+                    <div className="font-bold text-slate-900 dark:text-slate-100 truncate">{qz.title}</div>
+                    <div className="text-slate-500 text-[11px] truncate">{qz.questions.length} questions • {qz.timeLimitMinutes} min limit</div>
                   </div>
                 </div>
-                <Link to="/quizzes" className="btn-primary h-8 px-3 text-xs shrink-0 font-semibold">
+                <Link to="/quizzes" className="btn-primary h-8 px-3 text-xs shrink-0 font-semibold text-center">
                   Take Quiz
                 </Link>
               </div>

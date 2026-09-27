@@ -6,11 +6,11 @@ import { AITutorDrawer } from '../components/ai-tutor/AITutorDrawer';
 
 export const AppLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-dark-950 relative overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-dark-950 relative">
       <Header />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-w-0">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <main className="flex-1 min-w-0 overflow-y-auto p-3 sm:p-4 md:p-6">
           <Outlet />
         </main>
       </div>
