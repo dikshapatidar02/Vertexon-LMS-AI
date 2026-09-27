@@ -69,11 +69,16 @@ export const Header: React.FC = () => {
           </span>
         </Link>
 
-        {/* Divider & Page Breadcrumb */}
-        <div className="hidden md:flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-dark-800 pl-4">
+        {/* Divider & Page Breadcrumb & Demo Mode Badge */}
+        <div className="hidden md:flex items-center gap-2.5 text-xs text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-dark-800 pl-4">
           <span className="text-slate-500 dark:text-slate-400 font-medium">Vertexon</span>
           <ChevronRight className="w-3.5 h-3.5" />
           <span className="font-semibold text-slate-800 dark:text-slate-200">{getBreadcrumbTitle()}</span>
+          
+          <span className="ml-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            Demo Mode ({user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Guest'})
+          </span>
         </div>
       </div>
 

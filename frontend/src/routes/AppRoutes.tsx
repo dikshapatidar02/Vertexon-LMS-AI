@@ -10,12 +10,16 @@ import { ResetPassword } from '../pages/auth/ResetPassword';
 
 import { StudentDashboard } from '../pages/dashboard/StudentDashboard';
 import { CourseCatalog } from '../pages/course-catalog/CourseCatalog';
+import { CourseDetailsPage } from '../pages/course-catalog/CourseDetailsPage';
 import { CoursePlayer } from '../pages/course-player/CoursePlayer';
 import { QuizzesPage } from '../pages/quizzes/QuizzesPage';
 import { AssignmentsPage } from '../pages/quizzes/AssignmentsPage';
 import { CertificatesPage } from '../pages/quizzes/CertificatesPage';
+import { AchievementsPage } from '../pages/quizzes/AchievementsPage';
 import { DiscussionsPage } from '../pages/quizzes/DiscussionsPage';
+import { NotificationsPage } from '../pages/quizzes/NotificationsPage';
 import { ProfilePage } from '../pages/profile/ProfilePage';
+import { SettingsPage } from '../pages/profile/SettingsPage';
 
 import { InstructorDashboard } from '../pages/instructor/InstructorDashboard';
 import { CourseAuthoringWizard } from '../pages/instructor/CourseAuthoringWizard';
@@ -39,25 +43,32 @@ export const AppRoutes: React.FC = () => {
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           
-          {/* Shared / Student Routes */}
-          <Route path="profile" element={<ProfilePage />} />
+          {/* Student & Shared Routes */}
           <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="courses" element={<CourseCatalog />} />
+          <Route path="courses/:id" element={<CourseDetailsPage />} />
           <Route path="catalog" element={<CourseCatalog />} />
           <Route path="course-player" element={<CoursePlayer />} />
-          <Route path="quizzes" element={<QuizzesPage />} />
+          <Route path="learn/:id" element={<CoursePlayer />} />
           <Route path="assignments" element={<AssignmentsPage />} />
+          <Route path="quizzes" element={<QuizzesPage />} />
           <Route path="certificates" element={<CertificatesPage />} />
+          <Route path="achievements" element={<AchievementsPage />} />
           <Route path="discussions" element={<DiscussionsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="settings" element={<SettingsPage />} />
 
-
-          {/* Instructor Only Routes */}
+          {/* Instructor Routes */}
           <Route element={<ProtectedRoute allowedRoles={['instructor', 'admin']} />}>
+            <Route path="instructor" element={<InstructorDashboard />} />
             <Route path="instructor-dashboard" element={<InstructorDashboard />} />
             <Route path="create-course" element={<CourseAuthoringWizard />} />
           </Route>
 
-          {/* Admin Only Routes */}
+          {/* Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="admin" element={<AdminDashboard />} />
             <Route path="admin-panel" element={<AdminDashboard />} />
             <Route path="admin-users" element={<UserManagement />} />
             <Route path="admin-approvals" element={<CourseApprovalQueue />} />

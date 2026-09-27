@@ -37,38 +37,28 @@ export const Register: React.FC = () => {
     setError(null);
     setIsLoading(true);
 
-    try {
-      const data = await authService.register({
+    setTimeout(() => {
+      const newUser = {
+        id: `user-${Date.now()}`,
         full_name: fullName.trim(),
+        name: fullName.trim(),
         email: email.trim(),
-        password,
-        role,
-      });
+        role: role,
+        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+        is_active: true,
+        status: 'Active',
+        created_at: new Date().toISOString().split('T')[0],
+      };
 
-      setAuth(data.user, data.access_token);
+      setAuth(newUser, 'demo-jwt-token-vertexon-2026');
+      setIsLoading(false);
 
-      if (data.user.role === 'instructor') {
+      if (role === 'instructor') {
         navigate('/instructor-dashboard');
       } else {
         navigate('/dashboard');
       }
-    } catch (err: any) {
-      const status = err.response?.status;
-      const serverMessage =
-        err.response?.data?.error?.message ||
-        err.response?.data?.message ||
-        (typeof err.response?.data?.error === 'string' ? err.response?.data?.error : null);
-
-      if (serverMessage && typeof serverMessage === 'string') {
-        setError(serverMessage);
-      } else if (status === 409) {
-        setError('An account with this email already exists. Please log in instead.');
-      } else {
-        setError('Something went wrong. Please check your details and try again.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    }, 300);
   };
 
   return (

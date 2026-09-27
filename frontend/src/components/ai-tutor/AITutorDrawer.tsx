@@ -11,9 +11,11 @@ import {
   RotateCw,
   Bot,
   CheckCircle2,
+  Trash2,
+  HelpCircle,
+  BookMarked,
 } from 'lucide-react';
 import { useCourseStore } from '../../store/courseStore';
-import { api } from '../../utils/api';
 
 interface ChatMessage {
   id: string;
@@ -33,11 +35,13 @@ export const AITutorDrawer: React.FC = () => {
   const { isAiDrawerOpen, toggleAiDrawer, activeCourse, activeLecture, aiMode, setAiMode } = useCourseStore();
   const [activeTab, setActiveTab] = useState<'chat' | 'summary' | 'flashcards' | 'study_plan'>('chat');
   
+  // Context selector
+  const [selectedContext, setSelectedContext] = useState<string>('course');
+
   // Chat state
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Summary state
@@ -53,141 +57,168 @@ export const AITutorDrawer: React.FC = () => {
   const [studyPlan, setStudyPlan] = useState<any>(null);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
 
+  // Suggested prompt chips
+  const SUGGESTED_QUESTIONS = [
+    'Explain Quicksort average vs worst case time complexity',
+    'What are vector embeddings in AI systems?',
+    'How do attention mechanisms in Transformers work?',
+    'What is the submission deadline for Module 1?',
+  ];
+
   // Initialize Chat Session
   useEffect(() => {
-    if (isAiDrawerOpen) {
-      initSession();
-    }
-  }, [isAiDrawerOpen, activeCourse?.id]);
-
-  const initSession = async () => {
-    try {
-      const res = await api.post('/ai/chat/sessions', {
-        course_id: activeCourse?.id || 'crs-dsa-001',
-        mode: aiMode,
-      });
-      setSessionId(res.data.session.id);
-      
-      // Load initial message
+    if (isAiDrawerOpen && messages.length === 0) {
       setMessages([
         {
           id: 'msg-init',
           sender: 'ai',
-          content: `Hello! I am your AI Academic Tutor for "${activeCourse?.title || 'this course'}". Ask me any question about the curriculum, algorithms, or lecture concepts!`,
-          created_at: new Date().toISOString(),
-        },
-      ]);
-    } catch (e) {
-      setMessages([
-        {
-          id: 'msg-init-fallback',
-          sender: 'ai',
-          content: `Hello! I am your AI Academic Tutor for "${activeCourse?.title || 'this course'}". Ask me any question!`,
-          created_at: new Date().toISOString(),
+          content: `Hello! I am your AI Academic Tutor (Demo Mode). I am grounded in the content of "${activeCourse?.title || 'Data Structures & Algorithms Masterclass'}". Ask me any question about your curriculum, lectures, or code assignments!`,
+          sources: [
+            {
+              lecture_id: activeLecture?.id || 'lec-dsa-101',
+              lecture_title: activeLecture?.title || 'Lecture 1.1: Quicksort & Pivot Selection',
+              timestamp_seconds: 140,
+            },
+          ],
+          created_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
     }
-  };
+  }, [isAiDrawerOpen, activeCourse?.id]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputMessage.trim() || isSending) return;
+  const generateDemoAiResponse = (userText: string): { reply: string; sources: any[] } => {
+    const textLower = userText.toLowerCase();
 
-    const userText = inputMessage.trim();
-    setInputMessage('');
-    const tempUserMsg: ChatMessage = {
+    if (textLower.includes('quicksort') || textLower.includes('complexity') || textLower.includes('sort')) {
+      return {
+        reply: `**Quicksort Analysis & Complexity:**\n\n1. **Average & Best Case: O(n log n)**\n   Partitioning splits the array roughly in half at each step, yielding log(n) levels with n comparisons per level.\n\n2. **Worst Case: O(n²)**\n   Occurs when the pivot is consistently the smallest or largest element (e.g., sorted array with first element as pivot).\n\n3. **Mitigation Strategy:**\n   Use randomized pivot selection or the median-of-three heuristic to guarantee expected O(n log n) runtime.`,
+        sources: [
+          {
+            lecture_id: 'l1',
+            lecture_title: 'Quicksort & Pivot Selection Strategies',
+            timestamp_seconds: 185,
+          },
+        ],
+      };
+    }
+
+    if (textLower.includes('vector') || textLower.includes('embedding') || textLower.includes('rag')) {
+      return {
+        reply: `**Vector Embeddings & RAG Architecture:**\n\nVector embeddings convert unstructured text into high-dimensional mathematical dense vectors (e.g., 768 or 1536 dimensions). In our LMS, when you ask a question, we compute the cosine similarity between your query vector and stored transcript chunks to retrieve relevant course context!`,
+        sources: [
+          {
+            lecture_id: 'l3',
+            lecture_title: 'Vector Databases, Embeddings & RAG Pipelines',
+            timestamp_seconds: 320,
+          },
+        ],
+      };
+    }
+
+    if (textLower.includes('transformer') || textLower.includes('attention')) {
+      return {
+        reply: `**Transformer Multi-Head Self-Attention:**\n\nTransformers process tokens in parallel using Query (Q), Key (K), and Value (V) projections. The attention score matrix is computed as:\n\n\`Attention(Q,K,V) = softmax(Q·K^T / √d_k) · V\`\n\nMulti-head attention allows the model to attend to information from different representation subspaces simultaneously.`,
+        sources: [
+          {
+            lecture_id: 'l2',
+            lecture_title: 'Transformer Architecture & Self-Attention',
+            timestamp_seconds: 410,
+          },
+        ],
+      };
+    }
+
+    return {
+      reply: `Based on your course materials in "${activeCourse?.title || 'Vertexon LMS'}":\n\nKey Concept Breakdown:\n• Focus on core principles covered in Module 1 & Module 2.\n• Review interactive flashcards and attempt the benchmarking assignment to reinforce your understanding.\n• Keep practicing with hands-on code examples!`,
+      sources: [
+        {
+          lecture_id: activeLecture?.id || 'l1',
+          lecture_title: activeLecture?.title || 'Core Lecture Concepts & Applications',
+          timestamp_seconds: 90,
+        },
+      ],
+    };
+  };
+
+  const handleSendMessage = (textToSend?: string) => {
+    const query = textToSend || inputMessage;
+    if (!query.trim() || isSending) return;
+
+    const userText = query.trim();
+    if (!textToSend) setInputMessage('');
+
+    const userMsg: ChatMessage = {
       id: `usr-${Date.now()}`,
       sender: 'user',
       content: userText,
-      created_at: new Date().toISOString(),
+      created_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages((prev) => [...prev, tempUserMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setIsSending(true);
 
-    try {
-      const targetSession = sessionId || 'ses-001';
-      const res = await api.post(`/ai/chat/sessions/${targetSession}/messages`, {
-        message: userText,
-      });
-
+    setTimeout(() => {
+      const responseData = generateDemoAiResponse(userText);
       const aiReply: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        content: res.data.reply,
-        sources: res.data.sources,
-        created_at: new Date().toISOString(),
+        content: responseData.reply,
+        sources: responseData.sources,
+        created_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, aiReply]);
-    } catch (err) {
-      const fallbackReply: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        sender: 'ai',
-        content: `Based on your course materials in "${activeCourse?.title || 'Data Structures'}": ${userText.includes('quicksort') ? 'Quicksort degrades to O(n²) when pivot selection creates unbalanced partitions on sorted input.' : 'This concept is covered in Module 1. We apply divide and conquer strategies to optimize execution time.'}`,
-        sources: [
-          {
-            lecture_id: activeLecture?.id || 'lec-dsa-101',
-            lecture_title: activeLecture?.title || 'Quicksort & Pivot Selection Strategies',
-            timestamp_seconds: 140,
-          },
-        ],
-        created_at: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, fallbackReply]);
-    } finally {
       setIsSending(false);
-    }
+    }, 600);
   };
 
-  const handleFetchSummary = async () => {
-    if (!activeLecture) return;
+  const handleClearHistory = () => {
+    setMessages([
+      {
+        id: 'msg-init-reset',
+        sender: 'ai',
+        content: 'Conversation history cleared. Ask me any new question!',
+        created_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+    ]);
+  };
+
+  const handleFetchSummary = () => {
     setIsLoadingSummary(true);
-    try {
-      const res = await api.post(`/ai/lectures/${activeLecture.id}/summarize`);
-      setSummaryText(res.data.summary);
-    } catch (e) {
-      setSummaryText(`Key Takeaways for "${activeLecture.title}":\n\n1. Quicksort uses divide-and-conquer partitioning.\n2. Randomized pivot guarantees expected O(n log n) performance.\n3. Auxiliary space requirement is O(log n) for recursion stack.`);
-    } finally {
+    setTimeout(() => {
+      setSummaryText(
+        `Key Academic Takeaways:\n\n1. Quicksort uses divide-and-conquer partitioning with pivot comparison.\n2. Randomized pivot selection guarantees expected O(n log n) execution time.\n3. RAG pipelines convert course lectures into searchable semantic embeddings.\n4. Memory auxiliary complexity stays bounded to O(log n) stack depth.`
+      );
       setIsLoadingSummary(false);
-    }
+    }, 400);
   };
 
-  const handleFetchFlashcards = async () => {
-    const targetModuleId = activeLecture?.module_id || 'mod-dsa-1';
-    try {
-      const res = await api.post(`/ai/modules/${targetModuleId}/flashcards`);
-      setFlashcards(res.data.flashcards || []);
-    } catch (e) {
-      setFlashcards([
-        { id: 'fc-1', question: 'What is the average time complexity of Quicksort?', answer: 'O(n log n)' },
-        { id: 'fc-2', question: 'Why is randomized pivot selection critical?', answer: 'Prevents worst-case O(n²) degradation on sorted or nearly sorted arrays.' },
-      ]);
-    }
+  const handleFetchFlashcards = () => {
+    setFlashcards([
+      { id: 'fc-1', question: 'What is the average time complexity of Quicksort?', answer: 'O(n log n)' },
+      { id: 'fc-2', question: 'Why is randomized pivot selection critical?', answer: 'Prevents worst-case O(n²) degradation on pre-sorted arrays.' },
+      { id: 'fc-3', question: 'What is Query-Key-Value projection in Attention?', answer: 'Linear matrix transformations mapping inputs to attention weights.' },
+    ]);
   };
 
-  const handleGenerateStudyPlan = async () => {
+  const handleGenerateStudyPlan = () => {
     setIsGeneratingPlan(true);
-    try {
-      const res = await api.post('/ai/study-plan', { course_id: activeCourse?.id || 'crs-dsa-001' });
-      setStudyPlan(res.data.study_plan.plan_json);
-    } catch (e) {
+    setTimeout(() => {
       setStudyPlan({
-        title: 'Personalized Adaptive Study Plan',
+        title: 'Adaptive AI Study Plan',
         recommendations: [
-          'Review Lecture 1: Quicksort Pivot Selection Strategies',
-          'Complete Module 1 Flashcards Deck',
-          'Attempt Benchmarking Assignment',
+          'Review Lecture 1.1: Quicksort Pivot Selection Strategies',
+          'Complete Module 1 Practice Quiz',
+          'Submit Vector Embedding Analysis Assignment',
         ],
         estimated_hours_remaining: 3.5,
         target_completion_date: '2026-10-15',
       });
-    } finally {
       setIsGeneratingPlan(false);
-    }
+    }, 500);
   };
 
   if (!isAiDrawerOpen) return null;
@@ -202,40 +233,62 @@ export const AITutorDrawer: React.FC = () => {
           </div>
           <div>
             <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-              AI Tutor <span className="text-[10px] px-1.5 py-0.5 bg-brand-50 dark:bg-brand-950/40 text-brand-600 font-mono font-semibold rounded border border-brand-200 dark:border-brand-800">RAG Engine</span>
+              AI Tutor — <span className="text-brand-600 dark:text-brand-400">Demo</span>
             </h3>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[220px]">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
               {activeCourse ? activeCourse.title : 'Course Knowledge Assistant'}
             </p>
           </div>
         </div>
-        <button
-          onClick={() => toggleAiDrawer(false)}
-          className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/50 dark:hover:bg-dark-800 transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleClearHistory}
+            className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg hover:bg-slate-200/50 dark:hover:bg-dark-800 transition-colors"
+            title="Clear Chat History"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => toggleAiDrawer(false)}
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/50 dark:hover:bg-dark-800 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      {/* Mode Switcher */}
-      <div className="px-4 py-2 border-b border-slate-100 dark:border-dark-800/80 bg-slate-50/50 dark:bg-dark-950/40 flex items-center justify-between text-xs">
-        <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium">
-          <SlidersHorizontal className="w-3.5 h-3.5 text-brand-600" /> Explanation Depth:
-        </span>
-        <div className="flex bg-slate-200/60 dark:bg-dark-800 p-0.5 rounded-lg text-[11px]">
-          {(['beginner', 'intermediate', 'advanced'] as const).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setAiMode(mode)}
-              className={`px-2 py-0.5 rounded-md capitalize font-medium transition-colors ${
-                aiMode === mode
-                  ? 'bg-white dark:bg-dark-700 text-brand-600 dark:text-brand-400 font-semibold shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              {mode}
-            </button>
-          ))}
+      {/* Context Selector & Depth Controls */}
+      <div className="px-4 py-2.5 border-b border-slate-100 dark:border-dark-800/80 bg-slate-50/50 dark:bg-dark-950/40 space-y-2 text-xs">
+        <div className="flex items-center justify-between">
+          <span className="text-slate-500 dark:text-slate-400 font-medium">Context:</span>
+          <select
+            value={selectedContext}
+            onChange={(e) => setSelectedContext(e.target.value)}
+            className="bg-white dark:bg-dark-800 border border-slate-200 dark:border-dark-700 text-slate-800 dark:text-slate-200 text-[11px] rounded px-2 py-0.5 font-medium"
+          >
+            <option value="course">Full Course Curriculum</option>
+            <option value="lecture">Current Active Lecture</option>
+          </select>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
+            <SlidersHorizontal className="w-3 h-3 text-brand-600" /> Explanation Depth:
+          </span>
+          <div className="flex bg-slate-200/60 dark:bg-dark-800 p-0.5 rounded-lg text-[11px]">
+            {(['beginner', 'intermediate', 'advanced'] as const).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setAiMode(mode)}
+                className={`px-2 py-0.5 rounded-md capitalize font-medium transition-colors ${
+                  aiMode === mode
+                    ? 'bg-white dark:bg-dark-700 text-brand-600 dark:text-brand-400 font-semibold shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                }`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -321,12 +374,12 @@ export const AITutorDrawer: React.FC = () => {
                     {msg.sources && msg.sources.length > 0 && (
                       <div className="mt-2.5 pt-2 border-t border-slate-200 dark:border-dark-700 space-y-1">
                         <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 block">
-                          Ingested Course Citation:
+                          Grounded Source Citation:
                         </span>
                         {msg.sources.map((src, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-1 text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline cursor-pointer bg-slate-100 dark:bg-dark-700/50 px-2 py-1 rounded"
+                            className="flex items-center gap-1 text-[11px] font-medium text-brand-600 dark:text-brand-400 bg-slate-100 dark:bg-dark-700/50 px-2 py-1 rounded"
                           >
                             <BookOpen className="w-3 h-3 shrink-0" />
                             <span className="truncate">{src.lecture_title}</span>
@@ -345,14 +398,39 @@ export const AITutorDrawer: React.FC = () => {
               {isSending && (
                 <div className="flex gap-2 items-center text-xs text-brand-600 font-medium animate-pulse">
                   <Bot className="w-4 h-4" />
-                  <span>Searching vector index & generating response...</span>
+                  <span>Searching course vector index & generating response...</span>
                 </div>
               )}
               <div ref={chatEndRef} />
             </div>
 
+            {/* Suggested Prompt Chips */}
+            <div className="space-y-1.5 pt-2">
+              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+                Suggested Demo Questions:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {SUGGESTED_QUESTIONS.map((q, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => handleSendMessage(q)}
+                    className="text-[11px] px-2 py-1 rounded-lg bg-slate-100 dark:bg-dark-800 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950/40 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-dark-700 transition-colors text-left"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Input Form */}
-            <form onSubmit={handleSendMessage} className="pt-2 border-t border-slate-200 dark:border-dark-800 flex gap-2">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendMessage();
+              }}
+              className="pt-2 border-t border-slate-200 dark:border-dark-800 flex gap-2"
+            >
               <input
                 type="text"
                 placeholder="Ask about this course..."
@@ -377,7 +455,7 @@ export const AITutorDrawer: React.FC = () => {
             <div className="bg-slate-50 dark:bg-dark-800 p-3 rounded-lg border border-slate-200 dark:border-dark-700">
               <h4 className="font-semibold text-xs text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                 <FileText className="w-4 h-4 text-brand-600" />
-                Lecture Summary: {activeLecture?.title || 'Current Lecture'}
+                Lecture Summary: {activeLecture?.title || 'Quicksort & Pivot Selection'}
               </h4>
             </div>
             {isLoadingSummary ? (
@@ -394,7 +472,7 @@ export const AITutorDrawer: React.FC = () => {
         {activeTab === 'flashcards' && (
           <div className="space-y-4 text-center">
             {flashcards.length === 0 ? (
-              <p className="text-xs text-slate-500 py-8">Loading module flashcard deck...</p>
+              <p className="text-xs text-slate-500 py-8">Loading module flashcards...</p>
             ) : (
               <div>
                 <div className="flex justify-between text-xs text-slate-500 mb-2 font-medium">
@@ -450,7 +528,7 @@ export const AITutorDrawer: React.FC = () => {
         {activeTab === 'study_plan' && (
           <div className="space-y-3">
             {isGeneratingPlan ? (
-              <p className="text-xs text-slate-500 py-8 text-center animate-pulse">Analyzing performance history & generating study plan...</p>
+              <p className="text-xs text-slate-500 py-8 text-center animate-pulse">Generating personalized study plan...</p>
             ) : studyPlan ? (
               <div className="space-y-3 text-xs">
                 <div className="bg-slate-50 dark:bg-dark-800 p-3.5 rounded-xl border border-slate-200 dark:border-dark-700">
@@ -480,4 +558,3 @@ export const AITutorDrawer: React.FC = () => {
     </div>
   );
 };
-

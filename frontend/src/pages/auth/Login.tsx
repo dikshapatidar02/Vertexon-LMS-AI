@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, Mail, Lock, AlertCircle, LogIn, GraduationCap, UserCheck, ShieldCheck } from 'lucide-react';
 import { authService } from '../../services/auth.service';
 import { useAuthStore } from '../../store/authStore';
+import { DEMO_USERS } from '../../utils/demoData';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -13,43 +14,60 @@ export const Login: React.FC = () => {
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
 
+  const performDemoLogin = (targetEmail: string) => {
+    setError(null);
+    setIsLoading(true);
+
+    setTimeout(() => {
+      const lower = targetEmail.trim().toLowerCase();
+      let userObj = DEMO_USERS.student;
+      if (lower.includes('instructor')) {
+        userObj = DEMO_USERS.instructor;
+      } else if (lower.includes('admin')) {
+        userObj = DEMO_USERS.admin;
+      }
+
+      setAuth(
+        {
+          id: userObj.id,
+          full_name: userObj.name,
+          name: userObj.name,
+          email: userObj.email,
+          role: userObj.role,
+          avatar_url: userObj.avatar,
+          is_active: true,
+          status: 'Active',
+          created_at: '2026-01-15',
+          last_login_at: new Date().toISOString(),
+        },
+        'demo-jwt-token-vertexon-2026'
+      );
+
+      setIsLoading(false);
+
+      if (userObj.role === 'admin') {
+        navigate('/admin-panel');
+      } else if (userObj.role === 'instructor') {
+        navigate('/instructor-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
+    }, 200);
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       setError('Please enter both email and password.');
       return;
     }
-
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const data = await authService.login({ email: email.trim(), password });
-      setAuth(data.user, data.access_token);
-
-      if (data.user.role === 'admin') {
-        navigate('/admin-panel');
-      } else if (data.user.role === 'instructor') {
-        navigate('/instructor-dashboard');
-      } else {
-        navigate('/dashboard');
-      }
-    } catch (err: any) {
-      const msg =
-        err.response?.data?.error?.message ||
-        err.response?.data?.message ||
-        (typeof err.response?.data?.error === 'string' ? err.response?.data?.error : null) ||
-        'Invalid email or password.';
-      setError(msg);
-    } finally {
-      setIsLoading(false);
-    }
+    performDemoLogin(email);
   };
 
   const handleFillDemo = (demoEmail: string, demoPass: string) => {
     setEmail(demoEmail);
     setPassword(demoPass);
-    setError(null);
+    performDemoLogin(demoEmail);
   };
 
   return (
